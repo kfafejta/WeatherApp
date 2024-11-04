@@ -11,24 +11,24 @@ let temperatureChart;
 
 // Předpokládané obrázky pro různé druhy počasí ve složce "img"
 const weatherBackgrounds = {
-  "11d": "url(./img/bourka.jpg)", // Bouřka (den)
-  "11n": "url(./img/bourka.jpg)", // Bouřka (noc)
-  "09d": "url(./img/dest.jpg)", // Déšť (den)
+  "11d": "url(./img/bourka.jpg)",
+  "11n": "url(./img/bourka.jpg)",
+  "09d": "url(./img/dest.jpg)",
   "09n": "url(./img/dest.jpg)",
   "010n": "url(./img/dest.jpg)",
-  "010d": "url(./img/dest.jpg)", // Déšť (noc)
-  "01d": "url(./img/slunecno.jpg)", // Slunečno (den)
-  "01n": "url(./img/slunecno.jpg)", // Slunečno (noc)
+  "010d": "url(./img/dest.jpg)",
+  "01d": "url(./img/slunecno.jpg)",
+  "01n": "url(./img/slunecno.jpg)",
   "02n": "url(./img/polojasno.jpg)",
   "02d": "url(./img/polojasno.jpg)",
-  "13d": "url(./img/snih.jpg)", // Sníh (den)
-  "13n": "url(./img/snih.jpg)", // Sníh (noc)
-  "04d": "url(./img/oblacno.jpg)", // Oblačno (den)
-  "04n": "url(./img/oblacno.jpg)", // Oblačno (noc)¨
+  "13d": "url(./img/snih.jpg)",
+  "13n": "url(./img/snih.jpg)",
+  "04d": "url(./img/oblacno.jpg)",
+  "04n": "url(./img/oblacno.jpg)",
   "03d": "url(./img/oblacno.jpg)",
   "03n": "url(./img/oblacno.jpg)",
   "050n": "url(./img/mlha.jpg)",
-  "050d": "url(./img/mlha.jpg)", // Oblačno (den)
+  "050d": "url(./img/mlha.jpg)",
 };
 
 // Načtení měst ze souboru JSON
@@ -73,8 +73,11 @@ function getWeatherForecast(city) {
       if (data && data.city) {
         cityName.textContent = `Počasí: ${data.city.name}`;
         displayForecast(data);
-        // Zobrazíme graf pro dnešní den po načtení
         displayTemperatureChart(data, new Date().toISOString().split("T")[0]);
+
+        // Změníme pozadí pouze po úspěšném načtení předpovědi
+        const firstDayIcon = data.list[0].weather[0].icon;
+        changeBackground(firstDayIcon);
       } else {
         console.error("Data o městě nejsou k dispozici.");
       }
@@ -113,7 +116,7 @@ function displayForecast(data) {
       `;
       listItem.addEventListener("click", () => {
         displayTemperatureChart(data, date);
-        changeBackground(iconCode); // Změna pozadí při kliknutí na den
+        changeBackground(iconCode);
       });
       forecastList.appendChild(listItem);
     }
@@ -122,14 +125,12 @@ function displayForecast(data) {
 
 // Změna pozadí na základě počasí
 function changeBackground(iconCode) {
-  const backgroundImage =
-    weatherBackgrounds[iconCode] || "url(./img/default.jpg)"; // Defaultní obrázek pokud kód není uveden
+  const backgroundImage = weatherBackgrounds[iconCode];
   document.body.style.backgroundImage = backgroundImage;
 }
 
 // Zobrazení grafu teploty pro vybraný den s tříhodinovými intervaly
 function displayTemperatureChart(data, selectedDate) {
-  // Filtrovaná data pro zvolený den (00:00 - 23:59)
   const dailyData = data.list.filter((item) =>
     item.dt_txt.startsWith(selectedDate)
   );
@@ -137,8 +138,7 @@ function displayTemperatureChart(data, selectedDate) {
   const labels = [];
   const temperatures = [];
 
-  // Přidáme všechny časy od 00:00 do 21:00 s tříhodinovými intervaly
-  for (let hour = 0; hour <= 21; hour += 3) {
+  for (let hour = 0; hour <= 24; hour += 3) {
     const timeLabel = new Date(
       `${selectedDate}T${hour.toString().padStart(2, "0")}:00:00`
     );
@@ -159,13 +159,6 @@ function displayTemperatureChart(data, selectedDate) {
 
     temperatures.push(dataPoint ? dataPoint.main.temp : null);
   }
-
-  // Přidáme poslední bod pro 24:00
-  labels.push("24:00");
-  const lastDataPoint = dailyData.find(
-    (item) => new Date(item.dt_txt).getHours() === 0
-  );
-  temperatures.push(lastDataPoint ? lastDataPoint.main.temp : null);
 
   if (temperatureChart) {
     temperatureChart.destroy();
@@ -207,7 +200,7 @@ function displayTemperatureChart(data, selectedDate) {
             color: "#ddd",
           },
           ticks: {
-            autoSkip: false, // Zobrazí všechny časové body na ose x
+            autoSkip: false,
           },
         },
         y: {

@@ -1,12 +1,13 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #1e1e1e; /* Výchozí barva pozadí */
+  background-image: url("./img/default-picture.jpg");
+  background-size: cover; /* Vyplní celé pozadí, ale může část obrázku oříznout */
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: #fff;
   margin: 0;
   padding: 0;
-  background-size: cover; /* Zajistí, že pozadí pokryje celou plochu */
-  background-position: center; /* Udržuje pozadí ve středu */
-  transition: background-image 0.5s ease-in-out; /* Plynulý přechod mezi obrázky pozadí */
 }
 
 .container {
@@ -17,8 +18,8 @@ body {
     44,
     44,
     44,
-    0.6
-  ); /* Poloprůhledný, aby byl viditelný obrázek pozadí */
+    0.8
+  ); /* Nastavení průhlednosti přes rgba */
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -55,13 +56,13 @@ h1 {
 }
 
 #suggestions li:hover {
-  background-color: #555; /* Barva pozadí při najetí myší */
+  background-color: #555;
 }
 
 .chart-container {
   position: relative;
   width: 100%;
-  height: 300px; /* Zvýšíme výšku pro lepší čitelnost */
+  height: 300px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -80,12 +81,12 @@ h1 {
   align-items: center;
   padding: 10px;
   color: #ccc;
-  cursor: pointer; /* Změní kurzor na ruku při najetí myší */
+  cursor: pointer;
   transition: background-color 0.3s;
 }
 
 #forecast-list li:hover {
-  background-color: #333; /* Změní barvu pozadí při najetí myší */
+  background-color: #333;
 }
 
 .forecast-icon {
