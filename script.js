@@ -3,7 +3,6 @@ const CITY_JSON_PATH = "./city.list.json";
 const cityInput = document.getElementById("city-input");
 const suggestions = document.getElementById("suggestions");
 const cityName = document.getElementById("city-name");
-const weatherDescription = document.getElementById("weather-description");
 const forecastList = document.getElementById("forecast-list");
 const temperatureChartCanvas = document.getElementById("temperatureChart");
 
@@ -15,13 +14,21 @@ const weatherBackgrounds = {
   "11d": "url(./img/bourka.jpg)", // Bouřka (den)
   "11n": "url(./img/bourka.jpg)", // Bouřka (noc)
   "09d": "url(./img/dest.jpg)", // Déšť (den)
-  "09n": "url(./img/dest.jpg)", // Déšť (noc)
+  "09n": "url(./img/dest.jpg)",
+  "010n": "url(./img/dest.jpg)",
+  "010d": "url(./img/dest.jpg)", // Déšť (noc)
   "01d": "url(./img/slunecno.jpg)", // Slunečno (den)
   "01n": "url(./img/slunecno.jpg)", // Slunečno (noc)
+  "02n": "url(./img/polojasno.jpg)",
+  "02d": "url(./img/polojasno.jpg)",
   "13d": "url(./img/snih.jpg)", // Sníh (den)
   "13n": "url(./img/snih.jpg)", // Sníh (noc)
   "04d": "url(./img/oblacno.jpg)", // Oblačno (den)
-  "04n": "url(./img/oblacno.jpg)", // Oblačno (noc)
+  "04n": "url(./img/oblacno.jpg)", // Oblačno (noc)¨
+  "03d": "url(./img/oblacno.jpg)",
+  "03n": "url(./img/oblacno.jpg)",
+  "050n": "url(./img/mlha.jpg)",
+  "050d": "url(./img/mlha.jpg)", // Oblačno (den)
 };
 
 // Načtení měst ze souboru JSON
@@ -115,12 +122,14 @@ function displayForecast(data) {
 
 // Změna pozadí na základě počasí
 function changeBackground(iconCode) {
-  const backgroundImage = weatherBackgrounds[iconCode] || "url(./default.jpg)"; // Defaultní obrázek pokud kód není uveden
+  const backgroundImage =
+    weatherBackgrounds[iconCode] || "url(./img/default.jpg)"; // Defaultní obrázek pokud kód není uveden
   document.body.style.backgroundImage = backgroundImage;
 }
 
-// Zobrazení grafu teploty pro vybraný den
+// Zobrazení grafu teploty pro vybraný den s tříhodinovými intervaly
 function displayTemperatureChart(data, selectedDate) {
+  // Filtrovaná data pro zvolený den (00:00 - 23:59)
   const dailyData = data.list.filter((item) =>
     item.dt_txt.startsWith(selectedDate)
   );
@@ -128,13 +137,35 @@ function displayTemperatureChart(data, selectedDate) {
   const labels = [];
   const temperatures = [];
 
-  dailyData.forEach((item) => {
-    const date = new Date(item.dt_txt);
-    labels.push(
-      date.toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" })
+  // Přidáme všechny časy od 00:00 do 21:00 s tříhodinovými intervaly
+  for (let hour = 0; hour <= 21; hour += 3) {
+    const timeLabel = new Date(
+      `${selectedDate}T${hour.toString().padStart(2, "0")}:00:00`
     );
-    temperatures.push(item.main.temp);
-  });
+    labels.push(
+      timeLabel.toLocaleTimeString("cs-CZ", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
+
+    const dataPoint = dailyData.find((item) => {
+      const itemDate = new Date(item.dt_txt);
+      return (
+        itemDate.getHours() === timeLabel.getHours() &&
+        itemDate.toDateString() === timeLabel.toDateString()
+      );
+    });
+
+    temperatures.push(dataPoint ? dataPoint.main.temp : null);
+  }
+
+  // Přidáme poslední bod pro 24:00
+  labels.push("24:00");
+  const lastDataPoint = dailyData.find(
+    (item) => new Date(item.dt_txt).getHours() === 0
+  );
+  temperatures.push(lastDataPoint ? lastDataPoint.main.temp : null);
 
   if (temperatureChart) {
     temperatureChart.destroy();
@@ -174,6 +205,9 @@ function displayTemperatureChart(data, selectedDate) {
             display: true,
             text: "Čas",
             color: "#ddd",
+          },
+          ticks: {
+            autoSkip: false, // Zobrazí všechny časové body na ose x
           },
         },
         y: {
