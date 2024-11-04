@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Předpověď Počasí</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Chart.js knihovna -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="city-name">Počasí</h1>
+      <p id="weather-description"></p>
+
+      <!-- Našeptávač pro výběr města -->
+      <label for="city-input">Vyberte město:</label>
+      <input
+        type="text"
+        id="city-input"
+        placeholder="Zadejte město..."
+        autocomplete="off"
+      />
+      <ul id="suggestions"></ul>
+
+      <!-- Graf teploty -->
+      <div class="chart-container">
+        <canvas id="temperatureChart"></canvas>
+      </div>
+
+      <!-- Seznam pro předpověď na několik dní -->
+      <ul id="forecast-list"></ul>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
