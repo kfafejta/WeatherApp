@@ -5,11 +5,12 @@ const suggestions = document.getElementById("suggestions");
 const cityName = document.getElementById("city-name");
 const forecastList = document.getElementById("forecast-list");
 const temperatureChartCanvas = document.getElementById("temperatureChart");
+const locationIcon = document.querySelector(".location-icon");
 
 let cities = [];
 let temperatureChart;
 
-// Předpokládané obrázky pro různé druhy počasí ve složce "img"
+// Obrázky pro různé druhy počasí uložené ve složce "img"
 const weatherBackgrounds = {
   "11d": "url(./img/bourka.jpg)",
   "11n": "url(./img/bourka.jpg)",
@@ -30,6 +31,13 @@ const weatherBackgrounds = {
   "050n": "url(./img/mlha.jpg)",
   "050d": "url(./img/mlha.jpg)",
 };
+
+// Funkce pro změnu pozadí na základě ikony počasí
+function changeBackground(iconCode) {
+  const backgroundImage = weatherBackgrounds[iconCode];
+  document.body.style.backgroundImage =
+    backgroundImage || "url('./img/default-picture.jpg')";
+}
 
 // Načtení měst ze souboru JSON
 fetch(CITY_JSON_PATH)
@@ -52,11 +60,64 @@ cityInput.addEventListener("input", () => {
   });
 });
 
+// Výběr města a načtení předpovědi počasí
 function selectCity(city) {
   cityInput.value = city;
   suggestions.innerHTML = "";
   getWeatherForecast(city);
 }
+
+// Získání předpovědi počasí na základě aktuální polohy uživatele
+function getWeatherForCurrentLocation() {
+  getUserLocation();
+}
+
+// Získání polohy uživatele a načtení počasí na základě souřadnic
+function getUserLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetchWeatherByCoordinates(latitude, longitude);
+      },
+      (error) => {
+        console.error("Chyba při získávání polohy:", error);
+        alert("Nelze zjistit vaši polohu.");
+      }
+    );
+  } else {
+    alert("Geolokace není podporována vaším prohlížečem.");
+  }
+}
+
+// Načtení počasí na základě zeměpisné šířky a délky
+function fetchWeatherByCoordinates(lat, lon) {
+  fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Chyba při načítání dat o počasí");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data && data.city) {
+        cityName.textContent = `Počasí: ${data.city.name}`;
+        displayForecast(data);
+        displayTemperatureChart(data, new Date().toISOString().split("T")[0]);
+
+        // Změníme pozadí pouze po úspěšném načtení předpovědi
+        const firstDayIcon = data.list[0].weather[0].icon;
+        changeBackground(firstDayIcon);
+      } else {
+        console.error("Data o městě nejsou k dispozici.");
+      }
+    })
+    .catch((error) => console.error("Chyba při načítání předpovědi:", error));
+}
+
+locationIcon.addEventListener("click", getWeatherForCurrentLocation);
 
 // Načtení předpovědi počasí z OpenWeatherMap API
 function getWeatherForecast(city) {
@@ -85,7 +146,7 @@ function getWeatherForecast(city) {
     .catch((error) => console.error("Chyba při načítání předpovědi:", error));
 }
 
-// Zobrazení předpovědi ve formě seznamu pro 7 dní včetně dnešního dne
+// Zobrazení předpovědi ve formě seznamu pro 5 dní včetně dnešního dne
 function displayForecast(data) {
   forecastList.innerHTML = "";
 
@@ -123,12 +184,6 @@ function displayForecast(data) {
   });
 }
 
-// Změna pozadí na základě počasí
-function changeBackground(iconCode) {
-  const backgroundImage = weatherBackgrounds[iconCode];
-  document.body.style.backgroundImage = backgroundImage;
-}
-
 // Zobrazení grafu teploty pro vybraný den s tříhodinovými intervaly
 function displayTemperatureChart(data, selectedDate) {
   const dailyData = data.list.filter((item) =>
@@ -138,7 +193,8 @@ function displayTemperatureChart(data, selectedDate) {
   const labels = [];
   const temperatures = [];
 
-  for (let hour = 0; hour <= 24; hour += 3) {
+  // Přidání všech časů od 00:00 do 21:00 v tříhodinových intervalech
+  for (let hour = 0; hour <= 21; hour += 3) {
     const timeLabel = new Date(
       `${selectedDate}T${hour.toString().padStart(2, "0")}:00:00`
     );
@@ -159,6 +215,17 @@ function displayTemperatureChart(data, selectedDate) {
 
     temperatures.push(dataPoint ? dataPoint.main.temp : null);
   }
+
+  // Přidání posledního bodu pro 24:00
+  labels.push("24:00");
+  const lastDataPoint = dailyData.find(
+    (item) => new Date(item.dt_txt).getHours() === 0
+  );
+  temperatures.push(
+    lastDataPoint
+      ? lastDataPoint.main.temp
+      : temperatures[temperatures.length - 1]
+  );
 
   if (temperatureChart) {
     temperatureChart.destroy();
