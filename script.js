@@ -5,7 +5,7 @@ const suggestions = document.getElementById("suggestions");
 const cityName = document.getElementById("city-name");
 const forecastList = document.getElementById("forecast-list");
 const temperatureChartCanvas = document.getElementById("temperatureChart");
-const locationIcon = document.querySelector(".location-icon");
+const locationIcon = document.getElementById("location-icon");
 
 let cities = [];
 let temperatureChart;
@@ -31,6 +31,26 @@ const weatherBackgrounds = {
   "050n": "url(./img/mlha.jpg)",
   "050d": "url(./img/mlha.jpg)",
 };
+
+// // Funkce pro změnu pozadí na základě ikony počasí
+
+// function changeBackground(iconCode) {
+//   const backgroundImage = weatherBackgrounds[iconCode];
+//   document.body.style.backgroundImage =
+//     backgroundImage || "url('./img/default-picture.jpg')";
+// }
+
+// // Testovací výběr pro změnu pozadí (pro účely testování)
+
+// const backgroundTestSelect = document.getElementById("background-test");
+// if (backgroundTestSelect) {
+//   backgroundTestSelect.addEventListener("change", (event) => {
+//     const iconCode = event.target.value;
+//     if (iconCode) {
+//       changeBackground(iconCode);
+//     }
+//   });
+// }
 
 // Funkce pro změnu pozadí na základě ikony počasí
 function changeBackground(iconCode) {
@@ -78,11 +98,27 @@ function getUserLocation() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        console.log("Získaná poloha:", latitude, longitude);
         fetchWeatherByCoordinates(latitude, longitude);
       },
       (error) => {
         console.error("Chyba při získávání polohy:", error);
-        alert("Nelze zjistit vaši polohu.");
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert(
+              "Přístup k poloze byl zamítnut. Prosím povolte přístup k poloze ve vašem prohlížeči."
+            );
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert("Informace o poloze nejsou k dispozici.");
+            break;
+          case error.TIMEOUT:
+            alert("Žádost o získání polohy vypršela.");
+            break;
+          default:
+            alert("Došlo k neznámé chybě.");
+            break;
+        }
       }
     );
   } else {
@@ -117,9 +153,10 @@ function fetchWeatherByCoordinates(lat, lon) {
     .catch((error) => console.error("Chyba při načítání předpovědi:", error));
 }
 
+// Připojení události pro kliknutí na ikonu
 locationIcon.addEventListener("click", getWeatherForCurrentLocation);
 
-// Načtení předpovědi počasí z OpenWeatherMap API
+// Funkce pro načtení předpovědi počasí na základě města
 function getWeatherForecast(city) {
   fetch(
     `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${API_KEY}`
@@ -230,7 +267,6 @@ function displayTemperatureChart(data, selectedDate) {
   if (temperatureChart) {
     temperatureChart.destroy();
   }
-
   temperatureChart = new Chart(temperatureChartCanvas, {
     type: "line",
     data: {
@@ -264,10 +300,18 @@ function displayTemperatureChart(data, selectedDate) {
           title: {
             display: true,
             text: "Čas",
-            color: "#ddd",
+            color: "#ccc",
+            font: {
+              size: 13,
+              weight: "normal",
+            },
           },
           ticks: {
-            autoSkip: false,
+            color: "#ccc",
+            font: {
+              size: 11,
+              weight: "normal",
+            },
           },
         },
         y: {
@@ -277,7 +321,18 @@ function displayTemperatureChart(data, selectedDate) {
           title: {
             display: true,
             text: "Teplota (°C)",
-            color: "#ddd",
+            color: "#ccc",
+            font: {
+              size: 13,
+              weight: "normal",
+            },
+          },
+          ticks: {
+            color: "#ccc",
+            font: {
+              size: 11,
+              weight: "normal",
+            },
           },
           beginAtZero: false,
         },
