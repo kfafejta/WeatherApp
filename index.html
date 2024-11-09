@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Předpověď Počasí</title>
+
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1 id="city-name">Počasí</h1>
+      <p id="weather-description"></p>
+
+      <!-- Našeptávač pro výběr města s lokací polohy-->
+      <div class="label-input-container">
+        <label for="city-input">Vyberte město:</label>
+        <input
+          type="text"
+          id="city-input"
+          placeholder="Zadejte město..."
+          autocomplete="off"
+        />
+        <img
+          src="./icon/gps.png"
+          alt="Získat aktuální polohu"
+          class="location-icon"
+        />
+      </div>
+
+      <ul id="suggestions"></ul>
+
+      <!-- Graf teploty -->
+      <div class="chart-container">
+        <canvas id="temperatureChart"></canvas>
+      </div>
+
+      <!-- Seznam pro předpověď na několik dní -->
+      <ul id="forecast-list"></ul>
+    </div>
+
+    <!-- ------ TEST POZADÍ -----------
+
+  <div class="container">
+    <h1 id="city-name">Počasí</h1>
+    <p id="weather-description"></p>
+
+    Select menu pro výběr ikony počasí (pro testování)
+
+    <label for="background-test">Vyber pozadí:</label>
+    <select id="background-test">
+      <option value="">-- Vyber pozadí pro test --</option>
+      <option value="11d">Bouřka (den)</option>
+      <option value="09d">Déšť (den)</option>
+      <option value="01d">Slunečno (den)</option>
+      <option value="02d">Polojasno (den)</option>
+      <option value="13d">Sníh (den)</option>
+      <option value="04d">Oblačno (den)</option>
+      <option value="050d">Mlha (den)</option>
+    </select>
+  </div> -->
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
