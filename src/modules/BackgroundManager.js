@@ -19,7 +19,9 @@ const weatherBackgrounds = {
   "050d": "url(./img/mlha.jpg)",
 };
 
+// Změna pozadí na základě ikony počasí
 export function changeBackground(iconCode) {
-  const backgroundImage = weatherBackgrounds[iconCode] || "url('/img/default-picture.jpg')";
+  const backgroundImage =
+    weatherBackgrounds[iconCode] || "url('/img/default-picture.jpg')";
   document.body.style.backgroundImage = backgroundImage;
 }

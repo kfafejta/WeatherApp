@@ -74,7 +74,7 @@ Weather-app/
 │   │   ├── ForecastDisplay.js   // Modul pro zobrazení předpovědi
 │   │   └── TemperatureChart.js  // Modul pro graf teplot
 │   ├── styles/
-│   │   └── main.css             // Hlavní styly aplikace
+│   │   └── style.css             // Hlavní styly aplikace
 └── vite.config.js               // Konfigurace Vite.js
 ```
 

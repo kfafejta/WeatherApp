@@ -1,26 +1,39 @@
 import { Chart } from "chart.js/auto";
 
+// Globální proměnná pro graf
 let temperatureChart;
 
 export function displayTemperatureChart(data, selectedDate) {
-  const dailyData = data.list.filter((item) => item.dt_txt.startsWith(selectedDate));
+  // Filtrování dat pro vybraný den
+  const dailyData = data.list.filter((item) =>
+    item.dt_txt.startsWith(selectedDate)
+  );
 
+  // Generování časové osy po 3 hodinách až do "24:00"
   const labels = Array.from({ length: 8 }, (_, i) => {
     const hour = i * 3;
-    return new Date(`${selectedDate}T${String(hour).padStart(2, "0")}:00:00`).toLocaleTimeString("cs-CZ", {
+    return new Date(
+      `${selectedDate}T${String(hour).padStart(2, "0")}:00:00`
+    ).toLocaleTimeString("cs-CZ", {
       hour: "2-digit",
       minute: "2-digit",
     });
   });
   labels.push("24:00");
 
+  // Získání teplot pro jednotlivé časy nebo null, pokud nejsou data
   const temperatures = labels.map((_, i) => {
     const hour = i < 8 ? i * 3 : 0;
-    const dataPoint = dailyData.find((item) => new Date(item.dt_txt).getHours() === hour);
+    const dataPoint = dailyData.find(
+      (item) => new Date(item.dt_txt).getHours() === hour
+    );
     return dataPoint ? dataPoint.main.temp : null;
   });
 
+  // Odstranění předchozího grafu, pokud existuje, aby se zabránilo překreslování
   if (temperatureChart) temperatureChart.destroy();
+
+  // Vytvoření nového grafu s použitím Chart.js
   temperatureChart = new Chart(document.getElementById("temperatureChart"), {
     type: "line",
     data: {

@@ -7,22 +7,22 @@
 body {
   font-family: Arial, sans-serif;
   background-image: url("/public/img/default-picture.jpg");
-  background-size: cover; /* Vyplní celé pozadí, ale může část obrázku oříznout */
+  background-size: cover;
   background-position: center;
   background-attachment: fixed; /* Pozadí zůstává na místě při scrollování */
   background-repeat: no-repeat;
   color: #fff;
   margin: 0;
   padding: 0;
-  transition: background-image 0.7s ease-in-out; /* Plynulý přechod pozadí */
+  transition: background-image 0.7s ease-in-out;
 }
 
 /* Kontejner pro obsah */
 .container {
   max-width: 700px;
-  margin: 50px auto; /* Centrovaný obsah */
+  margin: 50px auto;
   padding: 20px;
-  background-color: rgba(44, 44, 44, 0.8); /* Průhledné pozadí */
+  background-color: rgba(44, 44, 44, 0.8);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stínování */
 }
@@ -62,7 +62,7 @@ h1 {
   border-radius: 50%;
 }
 
-/* Styl pro seznam návrhů */
+/* Styl pro seznam měst při psaní do inputu */
 #suggestions {
   list-style: none;
   padding: 0;
@@ -76,11 +76,11 @@ h1 {
 #suggestions li {
   padding: 8px;
   cursor: pointer;
-  transition: background-color 0.3s; /* Plynulá změna barvy pozadí */
+  transition: background-color 0.3s;
 }
 
 #suggestions li:hover {
-  background-color: #555; /* Změna barvy při najetí myší */
+  background-color: #555;
 }
 
 /* Kontejner pro graf */
@@ -109,7 +109,7 @@ h1 {
   padding: 10px;
   color: #ccc;
   cursor: pointer;
-  transition: background-color 0.3s; /* Plynulá změna pozadí */
+  transition: background-color 0.3s;
 }
 
 /* Změna pozadí při najetí myší */

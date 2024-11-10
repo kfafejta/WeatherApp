@@ -26,13 +26,16 @@ export function getWeatherForecast(city) {
 
 // Získání předpovědi počasí podle aktuální polohy uživatele
 export function getUserLocation() {
+  // Kontrola, zda je geolokace podporována
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) =>
         fetchWeatherByCoordinates(
+          // Získání zeměpisné šířky a délky
           position.coords.latitude,
           position.coords.longitude
         ),
+      // Ošetření chyby při získávání polohy
       handleLocationError
     );
   } else {

@@ -1,6 +1,7 @@
 import { CITY_JSON_PATH } from "../config";
 import { selectCity } from "./WeatherManager";
 
+// Globální proměnná pro uložení seznamu měst
 let cities = [];
 
 // Načtení měst ihned po spuštění aplikace
