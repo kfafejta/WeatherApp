@@ -70,6 +70,7 @@ export function displayTemperatureChart(data, selectedDate) {
             color: "#ddd",
           },
           ticks: {
+            color: "#C1BEC1",
             autoSkip: false,
           },
         },
@@ -81,6 +82,9 @@ export function displayTemperatureChart(data, selectedDate) {
             display: true,
             text: "Teplota (°C)",
             color: "#ddd",
+          },
+          ticks: {
+            color: "#C1BEC1",
           },
           beginAtZero: false,
         },
